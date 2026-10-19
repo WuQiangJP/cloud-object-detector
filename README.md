@@ -19,11 +19,22 @@ or sensitive remote sensing imagery.
 
 The default Codespaces forwarded port should remain private for personal testing.
 
-## Dependency notice
+## Local setup
 
-This project uses the Ultralytics Python package.
-Review the Ultralytics AGPL-3.0 license before commercial redistribution
-or offering this application as a public network service.
+```bash
+git clone https://github.com/Username/cloud-object-detector.git
+cd cloud-object-detector
+
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\Activate.ps1
+
+python -m pip install --upgrade pip
+python -m pip install -r requirements.in
+# Or use the locked versions:
+# python -m pip install -r requirements.lock.txt
+
+python -m streamlit run app.py
+```
 
 ## Troubleshooting
 
@@ -36,3 +47,12 @@ environment (Docker, GitHub Codespaces, servers). Use the official
 ```bash
 pip uninstall -y ultralytics opencv-python
 pip install ultralytics-opencv-headless
+```
+
+## License
+
+This project is provided for learning and research purposes.
+
+It depends on the Ultralytics YOLO package, which is distributed under
+AGPL-3.0. Review the upstream license before commercial use or before
+offering this application as a public network service.
