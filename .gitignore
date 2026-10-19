@@ -1,0 +1,32 @@
+# Python environment and cache
+.venv/
+__pycache__/
+*.py[cod]
+
+# Secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Model weights
+*.pt
+*.pth
+*.onnx
+*.engine
+*.ckpt
+*.safetensors
+
+# Local test data and output
+sample.jpg
+data/
+uploads/
+outputs/
+runs/
+*.log
+
+# Prevent accidental publication of test images
+*.jpg
+*.jpeg
+*.png
+*.webp
