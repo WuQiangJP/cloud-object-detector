@@ -25,22 +25,22 @@ yolo_settings.update({"sync": False})
 
 
 st.set_page_config(
-    page_title="云端物体检测器",
+    page_title="クラウド物体検出器",
     page_icon="🔍",
     layout="wide",
 )
 
 
-st.title("🔍 云端物体检测器")
+st.title("🔍 クラウド物体検出器")
 
 st.write(
-    "使用预训练 YOLO 模型，在 GitHub Codespaces 云端对普通图片进行物体检测。"
+    "事前学習済みの YOLO モデルを使用して、GitHub Codespaces のクラウド上で一般的な画像に対して物体検出を行います。"
 )
 
 st.warning(
-    "上传的图片会进入当前 GitHub Codespace 云端。"
-    "本应用代码不会主动把图片写入 Git 仓库或发送到用户指定的 URL。"
-    "请不要上传身份证、私人照片、未公开论文数据或敏感遥感原图。"
+    "アップロードされた画像は、現在の GitHub Codespace のクラウド上に送られます。"
+    "本アプリケーションのコードは、画像を Git リポジトリに書き込んだり、ユーザー指定の URL に送信したりすることはありません。"
+    "身分証明書、プライベートな写真、未公開の論文データ、機密性の高いリモートセンシング画像はアップロードしないでください。"
 )
 
 
@@ -48,7 +48,7 @@ def read_safe_image(raw: bytes) -> Image.Image:
     """Validate and convert image bytes without saving them to disk."""
 
     if len(raw) > MAX_UPLOAD_BYTES:
-        raise ValueError("图片文件不能超过 10 MB。")
+        raise ValueError("画像ファイルは 10 MB を超えないでください。")
 
     try:
         # First pass: validate the file structure.
@@ -60,7 +60,7 @@ def read_safe_image(raw: bytes) -> Image.Image:
             width, height = source.size
 
             if width * height > MAX_PIXELS:
-                raise ValueError("图片像素数量过大。")
+                raise ValueError("画像のピクセル数が大きすぎます。")
 
             # Correct EXIF orientation and convert to RGB.
             # The returned image does not retain the original EXIF metadata.
@@ -71,7 +71,7 @@ def read_safe_image(raw: bytes) -> Image.Image:
         raise
     except Exception:
         raise ValueError(
-            "无法读取该图片，请换用正常的 JPG、PNG 或 WebP 文件。"
+            "この画像を読み込めません。正常な JPG、PNG、または WebP ファイルに差し替えてください。"
         ) from None
 
 
@@ -83,14 +83,14 @@ def read_cloud_sample() -> Image.Image:
 
     if not SAMPLE_PATH.is_file():
         raise ValueError(
-            "Codespace 中还没有 sample.jpg。"
-            "请先按照说明在云端终端下载示例图片。"
+            "Codespace 内にまだ sample.jpg がありません。"
+            "まず手順に従って、クラウドのターミナルでサンプル画像をダウンロードしてください。"
         )
 
     try:
         raw = SAMPLE_PATH.read_bytes()
     except OSError:
-        raise ValueError("无法读取云端示例图片。") from None
+        raise ValueError("クラウドのサンプル画像を読み込めません。") from None
 
     return read_safe_image(raw)
 
@@ -106,26 +106,26 @@ def load_model() -> YOLO:
 
 
 source_type = st.radio(
-    "选择图片来源",
+    "画像の入手元を選択",
     [
-        "Codespace 云端示例图",
-        "浏览器上传图片",
+        "Codespace クラウドのサンプル画像",
+        "ブラウザから画像をアップロード",
     ],
 )
 
 
 image = None
 
-if source_type == "Codespace 云端示例图":
+if source_type == "Codespace クラウドのサンプル画像":
     try:
         image = read_cloud_sample()
-        st.caption("该示例图片位于 Codespace 云端，不来自你的本地电脑。")
+        st.caption("このサンプル画像は Codespace のクラウド上にあり、お使いのローカル PC からは取得していません。")
     except ValueError as error:
         st.info(str(error))
 
 else:
     uploaded_file = st.file_uploader(
-        "选择一张普通图片",
+        "画像を 1 枚選択",
         type=["jpg", "jpeg", "png", "webp"],
         max_upload_size=10,
     )
@@ -138,7 +138,7 @@ else:
 
 
 confidence = st.slider(
-    "最低置信度",
+    "最小信頼度",
     min_value=0.10,
     max_value=0.90,
     value=0.25,
@@ -147,13 +147,13 @@ confidence = st.slider(
 
 
 if image is not None:
-    st.subheader("输入图片")
-    st.image(image, caption="待检测图片")
+    st.subheader("入力画像")
+    st.image(image, caption="検出対象の画像")
 
-    if st.button("开始检测", type="primary"):
+    if st.button("検出を開始", type="primary"):
         try:
             with st.spinner(
-                "正在加载模型并进行检测。首次运行会下载模型文件，请稍候……"
+                "モデルを読み込み、検出を実行しています。初回実行時はモデルファイルをダウンロードするため、しばらくお待ちください……"
             ):
                 model = load_model()
 
@@ -170,8 +170,8 @@ if image is not None:
 
         except Exception:
             st.error(
-                "检测失败。网页中没有显示详细错误信息；"
-                "如需排查，请查看 Codespace 终端。"
+                "検出に失敗しました。ウェブページには詳細なエラー情報は表示されません。"
+                "原因を調べた場合は、Codespace のターミナルを確認してください。"
             )
             st.stop()
 
@@ -179,10 +179,10 @@ if image is not None:
         # Convert it to RGB for Streamlit.
         annotated_image = result.plot()[:, :, ::-1]
 
-        st.subheader("检测结果")
+        st.subheader("検出結果")
         st.image(
             annotated_image,
-            caption="带检测框的结果",
+            caption="検出枠付きの結果",
             channels="RGB",
         )
 
@@ -211,18 +211,18 @@ if image is not None:
 
                 rows.append(
                     {
-                        "类别": class_name,
-                        "置信度": round(float(score), 3),
-                        "左上角 X": round(float(xyxy[0]), 1),
-                        "左上角 Y": round(float(xyxy[1]), 1),
-                        "右下角 X": round(float(xyxy[2]), 1),
-                        "右下角 Y": round(float(xyxy[3]), 1),
+                        "クラス": class_name,
+                        "信頼度": round(float(score), 3),
+                        "左上 X": round(float(xyxy[0]), 1),
+                        "左上 Y": round(float(xyxy[1]), 1),
+                        "右下 X": round(float(xyxy[2]), 1),
+                        "右下 Y": round(float(xyxy[3]), 1),
                     }
                 )
 
         if rows:
-            st.success(f"检测到 {len(rows)} 个目标")
-            st.subheader("检测明细")
+            st.success(f"検出された {len(rows)} 個の対象")
+            st.subheader("検出の詳細")
             st.dataframe(rows)
         else:
-            st.info("没有检测到达到当前置信度阈值的目标。")
+            st.info("現在の信頼度閾値に達した対象は検出されませんでした。")
