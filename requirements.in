@@ -1,5 +1,5 @@
 streamlit
 Pillow
-# Headless 环境（Docker / GitHub Codespaces / 无显示器服务器）使用官方 headless 变体，
-# 避免 opencv-python 依赖 libGL.so.1。
+# Headless 環境（Docker / GitHub Codespaces / ディスプレイなしサーバー）では公式の headless 版を使用し，
+# opencv-python が libGL.so.1 に依存する問題を回避する。
 ultralytics-opencv-headless
